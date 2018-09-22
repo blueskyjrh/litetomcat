@@ -15,12 +15,12 @@ public class MyRequest {
         int length = 0;
         if ((length = inputStream.read(httpRequestBytes)) > 0) {
             httpRequest = new String(httpRequestBytes, 0, length);
+            String httpHead = httpRequest.split("\n")[0];
+            url = httpHead.split("\\s")[1];
+            method = httpHead.split("\\s")[0];
+            System.out.println(this);
         }
 
-        String httpHead = httpRequest.split("\n")[0];
-        url = httpHead.split("\\s")[1];
-        method = httpHead.split("\\s")[0];
-        System.out.println(this);
     }
 
     public String getUrl() {
@@ -29,5 +29,13 @@ public class MyRequest {
 
     public String getMethod() {
         return method;
+    }
+
+    @Override
+    public String toString() {
+        return "MyRequest{" +
+                "url='" + url + '\'' +
+                ", method='" + method + '\'' +
+                '}';
     }
 }

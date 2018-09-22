@@ -28,22 +28,23 @@ public class MyTomcat {
             System.out.println("MyTomcat is start...");
 
             while (true) {
-
                 Socket socket = serverSocket.accept();
                 InputStream inputStream = socket.getInputStream();
                 OutputStream outputStream = socket.getOutputStream();
-
                 MyRequest myRequest = new MyRequest(inputStream);
                 MyResponse myResponse = new MyResponse(outputStream);
-
-                dispatch(myRequest, myResponse);
-
+                try {
+                    dispatch(myRequest, myResponse);
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                }
                 socket.close();
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (serverSocket != null ) {
+            if (serverSocket != null) {
                 try {
                     serverSocket.close();
                 } catch (IOException e) {
@@ -62,8 +63,11 @@ public class MyTomcat {
 
     private void dispatch(MyRequest myRequest, MyResponse myResponse) {
 
-        String clazz = urlServletMap.get(myRequest.getUrl());
 
+        String clazz = urlServletMap.get(myRequest.getUrl());
+        if (clazz == null || clazz.length() == 0) {
+            throw new NullPointerException();
+        }
         try {
             Class<MyServlet> myServletClass = (Class<MyServlet>) Class.forName(clazz);
             MyServlet myServlet = myServletClass.newInstance();
@@ -78,7 +82,7 @@ public class MyTomcat {
 
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         new MyTomcat(8080).start();
     }
 }
